@@ -44,10 +44,7 @@ public class MyFirstPlugin extends Plugin {
     protected void startUp() throws AWTException {
         if (overlayManager != null) {
             overlayManager.add(overlay);
-        }
-
-        if (config.debugMode()) {
-            log.info("My First Plugin started successfully!");
+            overlay.myButton.hookMouseListener();
         }
 
         script.run(config);
@@ -59,10 +56,7 @@ public class MyFirstPlugin extends Plugin {
 
         if (overlayManager != null) {
             overlayManager.remove(overlay);
-        }
-
-        if (config.debugMode()) {
-            log.info("My First Plugin shut down successfully!");
+            overlay.myButton.unhookMouseListener();
         }
     }
 
