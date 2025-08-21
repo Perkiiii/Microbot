@@ -1,22 +1,24 @@
 package net.runelite.client.plugins.microbot.pvputilities;
 
+import net.runelite.api.Client;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.MenuAction;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.plugins.microbot.Script;
 import net.runelite.client.plugins.microbot.Microbot;
-import net.runelite.client.plugins.microbot.pvputilities.enums.SpellType;
-import net.runelite.client.plugins.microbot.util.inventory.Rs2Inventory;
-import net.runelite.client.plugins.microbot.util.prayer.Rs2Prayer;
-import net.runelite.client.plugins.microbot.util.prayer.Rs2PrayerEnum;
-import net.runelite.client.plugins.microbot.util.combat.Rs2Combat;
-import net.runelite.client.plugins.microbot.util.magic.Rs2Magic;
-import net.runelite.client.plugins.microbot.util.player.Rs2Player;
-import net.runelite.client.plugins.microbot.util.npc.Rs2Npc;
-import net.runelite.client.plugins.skillcalculator.skills.MagicAction;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class PvPUtilitiesScript extends Script {
-    public static double version = 1.2;
+    public static double version = 1.0;
+
+    @Inject
+    private Client client;
 
     private PvPUtilitiesConfig config;
 
@@ -24,123 +26,98 @@ public class PvPUtilitiesScript extends Script {
         this.config = config;
         Microbot.enableAutoRunOn = false;
 
+        // Simple main loop - mostly idle
         mainScheduledFuture = scheduledExecutorService.scheduleWithFixedDelay(() -> {
             try {
                 if (!super.run() || !config.enablePlugin()) return;
                 if (!Microbot.isLoggedIn()) return;
-
-                // Main script loop - mostly idle, profiles are triggered by hotkeys
-
+                // Main loop does nothing - everything is hotkey driven
             } catch (Exception ex) {
-                System.out.println(ex.getMessage());
+                Microbot.log("PvP error: " + ex.getMessage());
             }
-        }, 0, 600, TimeUnit.MILLISECONDS);
+        }, 0, 1000, TimeUnit.MILLISECONDS);
 
         return true;
     }
 
-    // -------- Profile execution methods --------
-    public void executeProfile(int n) {
-        try {
-            switch(n) {
-                case 1:
-                    if (config.enableProfile1()) {
-                        doActions(config.gear1(), config.prayers1(), config.spell1(),
-                                config.useSpec1(), config.specThreshold1(), config.attack1());
-                    }
-                    break;
-                case 2:
-                    if (config.enableProfile2()) {
-                        doActions(config.gear2(), config.prayers2(), config.spell2(),
-                                config.useSpec2(), config.specThreshold2(), config.attack2());
-                    }
-                    break;
-                case 3:
-                    if (config.enableProfile3()) {
-                        doActions(config.gear3(), config.prayers3(), config.spell3(),
-                                config.useSpec3(), config.specThreshold3(), config.attack3());
-                    }
-                    break;
-                case 4:
-                    if (config.enableProfile4()) {
-                        doActions(config.gear4(), config.prayers4(), config.spell4(),
-                                config.useSpec4(), config.specThreshold4(), config.attack4());
-                    }
-                    break;
-                case 5:
-                    if (config.enableProfile5()) {
-                        doActions(config.gear5(), config.prayers5(), config.spell5(),
-                                config.useSpec5(), config.specThreshold5(), config.attack5());
-                    }
-                    break;
-            }
-        } catch (Exception e) {
-            Microbot.log("[PvP] Profile " + n + " failed: " + e.getMessage());
-        }
+    // Execute gear set 1
+    public void executeGearSet1() {
+        Microbot.log("[PvP] Hotkey 1 pressed - attempting gear set 1");
+        equipGearSet(config.gear1());
     }
 
-    private void doActions(String gear, Rs2PrayerEnum[] prayers, SpellType spell,
-                          boolean useSpec, int specThreshold, boolean attack) {
-        Microbot.log("[PvP] Executing profile...");
+    // Execute gear set 2
+    public void executeGearSet2() {
+        Microbot.log("[PvP] Hotkey 2 pressed - attempting gear set 2");
+        equipGearSet(config.gear2());
+    }
 
-        // 1. Equip gear
-        if (!gear.isEmpty()) {
-            Arrays.stream(gear.split(","))
+    // Direct equipment using RuneLite API instead of broken Microbot system
+    private void equipGearSet(String gearString) {
+        if (gearString.isEmpty()) {
+            Microbot.log("[PvP] No gear configured for this hotkey");
+            return;
+        }
+
+        Microbot.log("[PvP] Attempting to equip: " + gearString);
+
+        try {
+            // Get inventory directly from RuneLite API
+            ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
+            if (inventory == null) {
+                Microbot.log("[PvP] ERROR: Cannot access inventory");
+                return;
+            }
+
+            Item[] items = inventory.getItems();
+            if (items == null) {
+                Microbot.log("[PvP] ERROR: Inventory items are null");
+                return;
+            }
+
+            // Parse item IDs and attempt to equip each one
+            Arrays.stream(gearString.split(","))
                 .map(String::trim)
-                .forEach(item -> {
+                .forEach(itemIdString -> {
                     try {
-                        if (item.matches("\\d+")) {
-                            // Item ID
-                            Rs2Inventory.equip(Integer.parseInt(item));
-                        } else {
-                            // Item name
-                            Rs2Inventory.equip(item);
-                        }
-                        sleep(120, 200);
-                    } catch (Exception ignored) {
-                        // Continue if item not found
+                        int itemId = Integer.parseInt(itemIdString);
+                        equipItemDirectly(itemId, items);
+                    } catch (NumberFormatException e) {
+                        Microbot.log("[PvP] Invalid item ID: " + itemIdString);
                     }
                 });
-        }
 
-        // 2. Toggle prayers
-        Arrays.stream(prayers).forEach(prayer -> {
-            try {
-                Rs2Prayer.toggle(prayer, true);
-                sleep(100, 200);
-            }
-            catch (Exception ignored) {}
-        });
-
-        // 3. Cast spell - using the correct Rs2Magic.cast method
-        if (spell != SpellType.NONE) {
-            try {
-                MagicAction magicAction = MagicAction.fromString(spell.getName());
-                if (magicAction != null) {
-                    Rs2Magic.cast(magicAction);
-                }
-                sleep(300, 400);
-            }
-            catch (Exception ignored) {}
-        }
-
-        // 4. Handle special attack
-        if (useSpec) {
-            Rs2Combat.setSpecState(true, specThreshold);
-        }
-
-        // 5. Attack current target - using the correct method
-        if (attack && Rs2Player.getInteracting() != null) {
-            try {
-                if (Rs2Player.getInteracting() instanceof net.runelite.api.NPC) {
-                    Rs2Npc.attack((net.runelite.api.NPC) Rs2Player.getInteracting());
-                }
-            } catch (Exception ignored) {}
+        } catch (Exception e) {
+            Microbot.log("[PvP] Equipment error: " + e.getMessage());
         }
     }
 
-    @Override
-    public void shutdown() {
-        super.shutdown();
+    // Direct equipment bypassing Microbot entirely
+    private void equipItemDirectly(int itemId, Item[] inventoryItems) {
+        try {
+            // Find the item in inventory
+            for (int i = 0; i < inventoryItems.length; i++) {
+                Item item = inventoryItems[i];
+                if (item.getId() == itemId) {
+                    Microbot.log("[PvP] Found item " + itemId + " at slot " + i + ", attempting direct equip");
+
+                    // Use direct RuneLite menu action instead of Microbot
+                    client.invokeMenuAction(
+                        "Wield",
+                        "item",
+                        itemId,
+                        MenuAction.CC_OP,
+                        i,
+                        WidgetInfo.INVENTORY.getId()
+                    );
+
+                    Microbot.log("[PvP] Equipment command sent for item " + itemId);
+                    return;
+                }
+            }
+            Microbot.log("[PvP] Item " + itemId + " not found in inventory");
+        } catch (Exception e) {
+            Microbot.log("[PvP] Direct equip failed for item " + itemId + ": " + e.getMessage());
+        }
     }
 }

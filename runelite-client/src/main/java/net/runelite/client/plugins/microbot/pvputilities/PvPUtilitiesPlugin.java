@@ -13,9 +13,9 @@ import javax.inject.Inject;
 import java.awt.*;
 
 @PluginDescriptor(
-        name = PluginDescriptor.Default + "PvP Utilities",
-        description = "Gear + prayer + spell automation toolkit for PvP",
-        tags = {"pvp", "utilities", "microbot"},
+        name = PluginDescriptor.Mocrosoft + "PvP Utilities",
+        description = "Minimal hotkey equipment for PvP",
+        tags = {"pvp", "equipment", "microbot"},
         enabledByDefault = false
 )
 @Slf4j
@@ -41,84 +41,52 @@ public class PvPUtilitiesPlugin extends Plugin {
     @Inject
     private KeyManager keyManager;
 
-    // Hotkey listeners for all 5 profiles
-    private HotkeyListener hk1, hk2, hk3, hk4, hk5;
+    // Only 2 hotkey listeners for minimal testing
+    private HotkeyListener hk1, hk2;
 
     @Override
     protected void startUp() throws AWTException {
         if (overlayManager != null) {
             overlayManager.add(overlay);
-            overlay.myButton.hookMouseListener();
         }
 
         script.run(config);
 
-        // Create and register hotkey listeners for all 5 profiles
+        // Create hotkey listeners that call the new direct methods
         hk1 = new HotkeyListener(() -> config.hotkey1()) {
             @Override
             public void hotkeyPressed() {
-                script.executeProfile(1);
+                script.executeGearSet1();
             }
         };
 
         hk2 = new HotkeyListener(() -> config.hotkey2()) {
             @Override
             public void hotkeyPressed() {
-                script.executeProfile(2);
+                script.executeGearSet2();
             }
         };
 
-        hk3 = new HotkeyListener(() -> config.hotkey3()) {
-            @Override
-            public void hotkeyPressed() {
-                script.executeProfile(3);
-            }
-        };
-
-        hk4 = new HotkeyListener(() -> config.hotkey4()) {
-            @Override
-            public void hotkeyPressed() {
-                script.executeProfile(4);
-            }
-        };
-
-        hk5 = new HotkeyListener(() -> config.hotkey5()) {
-            @Override
-            public void hotkeyPressed() {
-                script.executeProfile(5);
-            }
-        };
-
-        // Register all hotkey listeners
+        // Register hotkey listeners
         keyManager.registerKeyListener(hk1);
         keyManager.registerKeyListener(hk2);
-        keyManager.registerKeyListener(hk3);
-        keyManager.registerKeyListener(hk4);
-        keyManager.registerKeyListener(hk5);
 
-        if (config.enablePlugin()) {
-            log.info("PvP Utilities plugin started successfully!");
-        }
+        log.info("PvP Utilities minimal plugin started!");
     }
 
     @Override
     protected void shutDown() {
         script.shutdown();
-
         if (overlayManager != null) {
             overlayManager.remove(overlay);
-            overlay.myButton.unhookMouseListener();
         }
 
-        // Unregister all hotkey listeners
+        // Unregister hotkey listeners
         if (keyManager != null) {
             keyManager.unregisterKeyListener(hk1);
             keyManager.unregisterKeyListener(hk2);
-            keyManager.unregisterKeyListener(hk3);
-            keyManager.unregisterKeyListener(hk4);
-            keyManager.unregisterKeyListener(hk5);
         }
 
-        log.info("PvP Utilities plugin shut down successfully!");
+        log.info("PvP Utilities plugin stopped.");
     }
 }
