@@ -18,12 +18,15 @@ import net.runelite.client.plugins.microbot.util.npc.Rs2Npc;
 import net.runelite.client.plugins.microbot.util.player.Rs2Player;
 import net.runelite.client.plugins.microbot.util.prayer.Rs2Prayer;
 import net.runelite.client.plugins.microbot.util.prayer.Rs2PrayerEnum;
+import net.runelite.client.plugins.microbot.util.walker.Rs2Walker;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.api.Actor;
+import net.runelite.api.Player;
 
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -57,6 +60,8 @@ public class PvPUtilitiesPlugin extends Plugin implements KeyListener {
 
     private Random random = new Random();
     private Actor lastTarget = null;
+    private static Actor walkUnderTarget = null;
+    private boolean walkUnderEnabled = false;
 
     @Provides
     PvPUtilitiesConfig provideConfig(ConfigManager configManager) {
@@ -157,10 +162,53 @@ public class PvPUtilitiesPlugin extends Plugin implements KeyListener {
             });
         }
 
+        // Hotkey Profile Four
+        if (config.enablePvPFour() && config.toggleKey4().matches(e)) {
+            e.consume();
+            logMessage("Hotkey Profile Four activated");
+            Microbot.getClientThread().runOnSeperateThread(() -> {
+                executeHotkeyProfile(
+                    config.gearToEquip4(),
+                    config.prayersToEnable4(),
+                    config.spellToCast4(),
+                    config.activateSpecialAttack4(),
+                    config.attackTarget4(),
+                    4
+                );
+                return null;
+            });
+        }
+
+        // Hotkey Profile Five
+        if (config.enablePvPFive() && config.toggleKey5().matches(e)) {
+            e.consume();
+            logMessage("Hotkey Profile Five activated");
+            Microbot.getClientThread().runOnSeperateThread(() -> {
+                executeHotkeyProfile(
+                    config.gearToEquip5(),
+                    config.prayersToEnable5(),
+                    config.spellToCast5(),
+                    config.activateSpecialAttack5(),
+                    config.attackTarget5(),
+                    5
+                );
+                return null;
+            });
+        }
+
         // Offensive Prayer Switching Toggle
         if (config.prayerSwitchingToggleKey().matches(e)) {
             e.consume();
             script.togglePrayerSwitching();
+        }
+
+        // Walk Under Target Hotkey
+        if (config.walkUnderTargetHotkey().matches(e)) {
+            e.consume();
+            Microbot.getClientThread().runOnSeperateThread(() -> {
+                executeWalkUnder();
+                return null;
+            });
         }
     }
 
@@ -207,6 +255,10 @@ public class PvPUtilitiesPlugin extends Plugin implements KeyListener {
         String[] itemIDs = gearListConfig.split("\\s*,\\s*");
         logMessage("Equipping " + itemIDs.length + " items");
 
+        // Prepare all valid items first (human-like: mental preparation before rapid clicking)
+        List<Integer> validItemIds = new ArrayList<>();
+        List<String> validPatterns = new ArrayList<>();
+
         for (String itemIdStr : itemIDs) {
             itemIdStr = itemIdStr.trim();
             if (itemIdStr.isEmpty()) {
@@ -216,44 +268,59 @@ public class PvPUtilitiesPlugin extends Plugin implements KeyListener {
             try {
                 // Check for fuzzy match (items with charges)
                 if (itemIdStr.endsWith("*")) {
-                    // Remove the * and find items that start with the base ID
                     String baseId = itemIdStr.substring(0, itemIdStr.length() - 1);
-                    int baseIdInt = Integer.parseInt(baseId);
-
-                    // Find items in inventory that match the pattern
-                    boolean foundMatch = false;
                     List<Rs2ItemModel> inventoryItems = Rs2Inventory.items().collect(Collectors.toList());
                     for (Rs2ItemModel item : inventoryItems) {
                         if (item != null && String.valueOf(item.getId()).startsWith(baseId)) {
-                            Rs2Inventory.equip(item.getId());
-                            logMessage("Equipped item ID: " + item.getId() + " (fuzzy match for pattern " + itemIdStr + ")");
-                            foundMatch = true;
-                            break; // Only equip the first match
+                            validItemIds.add(item.getId());
+                            validPatterns.add(itemIdStr);
+                            logMessage("Found fuzzy match: " + item.getId() + " for pattern " + itemIdStr);
+                            break; // Only take the first match
                         }
-                    }
-
-                    if (!foundMatch) {
-                        logMessage("No items found matching pattern: " + itemIdStr);
                     }
                 } else {
                     // Exact match for regular items
                     int itemId = Integer.parseInt(itemIdStr);
                     if (Rs2Inventory.contains(itemId)) {
-                        Rs2Inventory.equip(itemId);
-                        logMessage("Equipped item ID: " + itemId);
+                        validItemIds.add(itemId);
+                        validPatterns.add(itemIdStr);
                     } else {
                         logMessage("Item ID " + itemId + " not found in inventory");
                     }
                 }
-
-                // Small delay between items for stability
-                try {
-                    Thread.sleep(25);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
             } catch (NumberFormatException e) {
                 logMessage("Invalid item ID: " + itemIdStr);
+            }
+        }
+
+        // Now execute rapid equipping with human-like timing
+        if (!validItemIds.isEmpty()) {
+            equipItemsWithHumanTiming(validItemIds, validPatterns);
+        }
+    }
+
+    private void equipItemsWithHumanTiming(List<Integer> itemIds, List<String> patterns) {
+        Random random = new Random();
+
+        // Human-like: First item is equipped immediately (muscle memory reaction)
+        if (!itemIds.isEmpty()) {
+            Rs2Inventory.equip(itemIds.get(0));
+            logMessage("Equipped item ID: " + itemIds.get(0) + " (pattern: " + patterns.get(0) + ")");
+        }
+
+        // Subsequent items with human-like rapid clicking (8-18ms intervals)
+        for (int i = 1; i < itemIds.size(); i++) {
+            try {
+                // Human click timing: 8-18ms between rapid clicks (realistic for skilled PvP players)
+                int humanDelay = 8 + random.nextInt(11); // 8-18ms range
+                Thread.sleep(humanDelay);
+
+                Rs2Inventory.equip(itemIds.get(i));
+                logMessage("Equipped item ID: " + itemIds.get(i) + " (pattern: " + patterns.get(i) + ") after " + humanDelay + "ms");
+
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                break;
             }
         }
     }
@@ -266,6 +333,10 @@ public class PvPUtilitiesPlugin extends Plugin implements KeyListener {
         String[] prayers = prayerNames.split("\\s*,\\s*");
         logMessage("Activating " + prayers.length + " prayers");
 
+        // Prepare all valid prayers first (human-like: mental preparation before rapid clicking)
+        List<Rs2PrayerEnum> validPrayers = new ArrayList<>();
+        List<String> validPrayerNames = new ArrayList<>();
+
         for (String prayerName : prayers) {
             prayerName = prayerName.trim();
             if (prayerName.isEmpty()) {
@@ -275,13 +346,44 @@ public class PvPUtilitiesPlugin extends Plugin implements KeyListener {
             Rs2PrayerEnum prayer = findPrayerByName(prayerName);
             if (prayer != null) {
                 if (!Rs2Prayer.isPrayerActive(prayer)) {
-                    Rs2Prayer.toggle(prayer);
-                    logMessage("Activated prayer: " + prayer.getName());
+                    validPrayers.add(prayer);
+                    validPrayerNames.add(prayerName);
                 } else {
                     logMessage("Prayer already active: " + prayer.getName());
                 }
             } else {
                 logMessage("Unknown prayer: " + prayerName);
+            }
+        }
+
+        // Now execute rapid prayer activation with human-like timing
+        if (!validPrayers.isEmpty()) {
+            activatePrayersWithHumanTiming(validPrayers, validPrayerNames);
+        }
+    }
+
+    private void activatePrayersWithHumanTiming(List<Rs2PrayerEnum> prayers, List<String> prayerNames) {
+        Random random = new Random();
+
+        // Human-like: First prayer is activated immediately (muscle memory reaction)
+        if (!prayers.isEmpty()) {
+            Rs2Prayer.toggle(prayers.get(0));
+            logMessage("Activated prayer: " + prayers.get(0).getName());
+        }
+
+        // Subsequent prayers with human-like rapid clicking (8-18ms intervals)
+        for (int i = 1; i < prayers.size(); i++) {
+            try {
+                // Human click timing: 8-18ms between rapid clicks (realistic for skilled PvP players)
+                int humanDelay = 8 + random.nextInt(11); // 8-18ms range
+                Thread.sleep(humanDelay);
+
+                Rs2Prayer.toggle(prayers.get(i));
+                logMessage("Activated prayer: " + prayers.get(i).getName() + " after " + humanDelay + "ms");
+
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                break;
             }
         }
     }
@@ -535,5 +637,84 @@ public class PvPUtilitiesPlugin extends Plugin implements KeyListener {
             default:
                 return null;
         }
+    }
+
+    private void toggleWalkUnder() {
+        walkUnderEnabled = !walkUnderEnabled;
+        if (walkUnderEnabled) {
+            logMessage("Walk under target enabled");
+            // Set walkUnderTarget to the current target if available
+            Player localPlayer = Microbot.getClient().getLocalPlayer();
+            if (localPlayer != null && localPlayer.getInteracting() != null) {
+                walkUnderTarget = localPlayer.getInteracting();
+                logMessage("Walk under target set to: " + walkUnderTarget.getName());
+            } else {
+                logMessage("No target available to walk under");
+            }
+        } else {
+            logMessage("Walk under target disabled");
+            walkUnderTarget = null;
+        }
+    }
+
+    private void performWalkUnder() {
+        if (walkUnderTarget != null) {
+            try {
+                // Walk to the target's current position
+                Rs2Walker.walkTo(walkUnderTarget.getWorldLocation());
+                logMessage("Walking under target: " + walkUnderTarget.getName());
+            } catch (Exception e) {
+                logMessage("Failed to walk under target: " + e.getMessage());
+            }
+        } else {
+            logMessage("No walk under target set");
+        }
+    }
+
+    private void executeWalkUnder() {
+        if (!config.walkUnderTarget()) {
+            logMessage("Walk under target is disabled in config");
+            return;
+        }
+
+        // Get the current target similar to Bradley Combat logic
+        Actor target = getValidTarget();
+        if (target != null && target.getLocalLocation() != null && target.getLocalLocation().isInScene()) {
+            // Use Bradley Combat's walkUnder logic - simulate walking to the target's position
+            if (target instanceof Player) {
+                Rs2Player.walkUnder(Rs2Player.getPlayer(target.getName()));
+                logMessage("Walking under target: " + target.getName());
+            } else {
+                logMessage("Target is not a player, cannot walk under");
+            }
+        } else {
+            logMessage("No valid target available to walk under");
+        }
+    }
+
+    private Actor getValidTarget() {
+        // First try to get the current interacting target
+        Player localPlayer = Microbot.getClient().getLocalPlayer();
+        if (localPlayer != null && localPlayer.getInteracting() != null) {
+            return localPlayer.getInteracting();
+        }
+
+        // Fall back to the last known target
+        return lastTarget;
+    }
+
+    // Static methods for target management similar to Bradley Combat
+    public static Actor getWalkUnderTarget() {
+        return walkUnderTarget;
+    }
+
+    public static void setWalkUnderTarget(Actor target) {
+        walkUnderTarget = target;
+    }
+
+    public static boolean isValidWalkUnderTarget() {
+        return walkUnderTarget != null &&
+               walkUnderTarget.getLocalLocation() != null &&
+               walkUnderTarget.getLocalLocation().isInScene();
     }
 }

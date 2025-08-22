@@ -213,15 +213,11 @@ public class PvPUtilitiesScript extends Script {
         }
     }
 
-    private void logMessage(String message) {
-        if (config != null && config.enableLogging()) {
-            Microbot.log("[PvP Prayer] " + message);
-        }
-    }
-
     private void turnOffAllOffensivePrayers() {
-        // List of all offensive prayers that should be turned off
-        Rs2PrayerEnum[] allOffensivePrayers = {
+        logMessage("Turning off all offensive prayers");
+
+        // List of all offensive prayers to turn off
+        Rs2PrayerEnum[] offensivePrayers = {
             Rs2PrayerEnum.BURST_STRENGTH,
             Rs2PrayerEnum.SUPERHUMAN_STRENGTH,
             Rs2PrayerEnum.ULTIMATE_STRENGTH,
@@ -237,11 +233,17 @@ public class PvPUtilitiesScript extends Script {
             Rs2PrayerEnum.AUGURY
         };
 
-        for (Rs2PrayerEnum prayer : allOffensivePrayers) {
+        for (Rs2PrayerEnum prayer : offensivePrayers) {
             if (Rs2Prayer.isPrayerActive(prayer)) {
                 Rs2Prayer.toggle(prayer, false);
-                logMessage("Turned off offensive prayer: " + prayer.getName());
+                logMessage("Turned off prayer: " + prayer.getName());
             }
+        }
+    }
+
+    private void logMessage(String message) {
+        if (config != null && config.enableLogging()) {
+            Microbot.log("[PvP Script] " + message);
         }
     }
 
