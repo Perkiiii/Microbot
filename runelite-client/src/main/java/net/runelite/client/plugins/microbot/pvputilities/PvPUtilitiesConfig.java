@@ -77,9 +77,21 @@ public interface PvPUtilitiesConfig extends Config
     }
 
     @ConfigItem(
+            keyName = "fastGearSwitching",
+            name = "Fast Gear Switching",
+            description = "Enable faster gear switching with minimal delays (1-3ms instead of 8-18ms). Better for competitive PvP.",
+            position = 7,
+            section = pvpUtilitiesConfig
+    )
+    default boolean fastGearSwitching()
+    {
+        return true;
+    }
+
+    @ConfigItem(
             keyName = "walkUnderTarget",
             name = "Walk Under Target",
-            description = "Automatically walk under the target when enabled.",
+            description = "Automatically walk under the target.",
             position = 6,
             section = pvpUtilitiesConfig
     )
@@ -92,13 +104,14 @@ public interface PvPUtilitiesConfig extends Config
             keyName = "walkUnderTargetHotkey",
             name = "Walk Under Target Hotkey",
             description = "Hotkey to toggle walk under target functionality.",
-            position = 7,
+            position = 8,
             section = pvpUtilitiesConfig
     )
     default Keybind walkUnderTargetHotkey()
     {
         return Keybind.NOT_SET;
     }
+
 
     // ===========================================
     // TARGET VISIBILITY SECTION
@@ -132,6 +145,30 @@ public interface PvPUtilitiesConfig extends Config
     default java.awt.Color targetHighlightColor()
     {
         return java.awt.Color.RED;
+    }
+
+    @ConfigItem(
+            keyName = "setTargetHotkey",
+            name = "Set Target Hotkey",
+            description = "Hotkey to set your current interacting target as the main target for highlighting and walk under.",
+            position = 3,
+            section = targetVisibility
+    )
+    default Keybind setTargetHotkey()
+    {
+        return Keybind.NOT_SET;
+    }
+
+    @ConfigItem(
+            keyName = "clearTargetHotkey",
+            name = "Clear Target Hotkey",
+            description = "Hotkey to clear the current set target.",
+            position = 4,
+            section = targetVisibility
+    )
+    default Keybind clearTargetHotkey()
+    {
+        return Keybind.NOT_SET;
     }
 
     // ===========================================
