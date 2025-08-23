@@ -3,7 +3,10 @@ package net.runelite.client.plugins.microbot.pvputilities;
 import net.runelite.api.Actor;
 import net.runelite.api.Player;
 import net.runelite.client.plugins.microbot.Microbot;
+<<<<<<< Updated upstream
 import net.runelite.client.plugins.microbot.util.player.Rs2Player;
+=======
+>>>>>>> Stashed changes
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
@@ -35,7 +38,11 @@ public class PvPUtilitiesOverlay extends OverlayPanel {
         }
 
         try {
+<<<<<<< Updated upstream
             panelComponent.setPreferredSize(new Dimension(200, 100));
+=======
+            panelComponent.setPreferredSize(new Dimension(180, 80));
+>>>>>>> Stashed changes
 
             // Title
             panelComponent.getChildren().add(TitleComponent.builder()
@@ -43,9 +50,14 @@ public class PvPUtilitiesOverlay extends OverlayPanel {
                     .color(Color.WHITE)
                     .build());
 
+<<<<<<< Updated upstream
             // Show our setTarget currentTarget instead of interacting target
             Actor currentTarget = PvPUtilitiesPlugin.getTarget();
 
+=======
+            // Current Target only (removed status and spec info as requested)
+            Actor currentTarget = plugin.getCurrentTarget();
+>>>>>>> Stashed changes
             String targetName = "None";
             Color targetColor = Color.RED;
 
@@ -53,6 +65,7 @@ public class PvPUtilitiesOverlay extends OverlayPanel {
                 targetName = currentTarget.getName();
                 targetColor = Color.GREEN;
 
+<<<<<<< Updated upstream
                 // Highlight the target if highlighting is enabled
                 if (config.highlightTarget()) {
                     highlightTarget(currentTarget);
@@ -61,10 +74,19 @@ public class PvPUtilitiesOverlay extends OverlayPanel {
 
             panelComponent.getChildren().add(LineComponent.builder()
                     .left("Set Target:")
+=======
+                // Highlight the target if enabled
+                highlightTarget(currentTarget);
+            }
+
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Target:")
+>>>>>>> Stashed changes
                     .right(targetName)
                     .rightColor(targetColor)
                     .build());
 
+<<<<<<< Updated upstream
             // Also show current interacting target for comparison
             Actor interactingTarget = null;
             try {
@@ -115,6 +137,10 @@ public class PvPUtilitiesOverlay extends OverlayPanel {
                     .right("Error")
                     .rightColor(Color.RED)
                     .build());
+=======
+        } catch (Exception e) {
+            // Fail silently to avoid log spam
+>>>>>>> Stashed changes
         }
 
         return super.render(graphics);

@@ -92,7 +92,11 @@ public interface PvPUtilitiesConfig extends Config
             keyName = "walkUnderTarget",
             name = "Walk Under Target",
             description = "Automatically walk under the target.",
+<<<<<<< Updated upstream
             position = 6,
+=======
+            position = 8,
+>>>>>>> Stashed changes
             section = pvpUtilitiesConfig
     )
     default boolean walkUnderTarget()
@@ -104,7 +108,11 @@ public interface PvPUtilitiesConfig extends Config
             keyName = "walkUnderTargetHotkey",
             name = "Walk Under Target Hotkey",
             description = "Hotkey to toggle walk under target functionality.",
+<<<<<<< Updated upstream
             position = 8,
+=======
+            position = 9,
+>>>>>>> Stashed changes
             section = pvpUtilitiesConfig
     )
     default Keybind walkUnderTargetHotkey()
@@ -118,15 +126,25 @@ public interface PvPUtilitiesConfig extends Config
     // ===========================================
     @ConfigSection(
             name = "Target Visibility",
+<<<<<<< Updated upstream
             description = "Target visibility settings",
             position = 2
+=======
+            description = "Automatic target highlighting using the advanced target management system",
+            position = 2,
+            closedByDefault = true
+>>>>>>> Stashed changes
     )
     String targetVisibility = "targetVisibility";
 
     @ConfigItem(
             keyName = "highlightTarget",
             name = "Highlight Target",
+<<<<<<< Updated upstream
             description = "Highlight your current target for better visibility.",
+=======
+            description = "Automatically highlight your current target detected by the advanced target management system.",
+>>>>>>> Stashed changes
             position = 1,
             section = targetVisibility
     )
@@ -147,6 +165,7 @@ public interface PvPUtilitiesConfig extends Config
         return java.awt.Color.RED;
     }
 
+<<<<<<< Updated upstream
     @ConfigItem(
             keyName = "setTargetHotkey",
             name = "Set Target Hotkey",
@@ -155,11 +174,34 @@ public interface PvPUtilitiesConfig extends Config
             section = targetVisibility
     )
     default Keybind setTargetHotkey()
+=======
+
+    // ===========================================
+    // DEFENSIVE PRAYER SWITCHING SECTION
+    // ===========================================
+    @ConfigSection(
+            name = "Defensive Prayer Switching",
+            description = "Hotkeys for defensive prayer switching",
+            position = 3,
+            closedByDefault = true
+    )
+    String defensivePrayerSwitching = "defensivePrayerSwitching";
+
+    @ConfigItem(
+            keyName = "protectFromMagicHotkey",
+            name = "Protect from Magic",
+            description = "Hotkey to activate Protect from Magic prayer.",
+            position = 1,
+            section = defensivePrayerSwitching
+    )
+    default Keybind protectFromMagicHotkey()
+>>>>>>> Stashed changes
     {
         return Keybind.NOT_SET;
     }
 
     @ConfigItem(
+<<<<<<< Updated upstream
             keyName = "clearTargetHotkey",
             name = "Clear Target Hotkey",
             description = "Hotkey to clear the current set target.",
@@ -167,17 +209,47 @@ public interface PvPUtilitiesConfig extends Config
             section = targetVisibility
     )
     default Keybind clearTargetHotkey()
+=======
+            keyName = "protectFromMissilesHotkey",
+            name = "Protect from Missiles",
+            description = "Hotkey to activate Protect from Missiles prayer.",
+            position = 2,
+            section = defensivePrayerSwitching
+    )
+    default Keybind protectFromMissilesHotkey()
+>>>>>>> Stashed changes
     {
         return Keybind.NOT_SET;
     }
 
+<<<<<<< Updated upstream
+=======
+    @ConfigItem(
+            keyName = "protectFromMeleeHotkey",
+            name = "Protect from Melee",
+            description = "Hotkey to activate Protect from Melee prayer.",
+            position = 3,
+            section = defensivePrayerSwitching
+    )
+    default Keybind protectFromMeleeHotkey()
+    {
+        return Keybind.NOT_SET;
+    }
+
+
+>>>>>>> Stashed changes
     // ===========================================
     // OFFENSIVE PRAYER SWITCHING SECTION
     // ===========================================
     @ConfigSection(
             name = "Offensive Prayer Switching",
             description = "Automatic prayer switching based on gear equipped",
+<<<<<<< Updated upstream
             position = 3
+=======
+            position = 4,
+            closedByDefault = true
+>>>>>>> Stashed changes
     )
     String offensivePrayerSwitching = "offensivePrayerSwitching";
 
@@ -286,7 +358,12 @@ public interface PvPUtilitiesConfig extends Config
     @ConfigSection(
             name = "Hotkey Profile One",
             description = "First hotkey profile configuration",
+<<<<<<< Updated upstream
             position = 4
+=======
+            position = 5,
+            closedByDefault = true
+>>>>>>> Stashed changes
     )
     String hotkeyProfile1 = "hotkeyProfile1";
 
@@ -380,7 +457,12 @@ public interface PvPUtilitiesConfig extends Config
     @ConfigSection(
             name = "Hotkey Profile Two",
             description = "Second hotkey profile configuration",
+<<<<<<< Updated upstream
             position = 5
+=======
+            position = 6,
+            closedByDefault = true
+>>>>>>> Stashed changes
     )
     String hotkeyProfile2 = "hotkeyProfile2";
 
@@ -474,7 +556,12 @@ public interface PvPUtilitiesConfig extends Config
     @ConfigSection(
             name = "Hotkey Profile Three",
             description = "Third hotkey profile configuration",
+<<<<<<< Updated upstream
             position = 6
+=======
+            position = 7,
+            closedByDefault = true
+>>>>>>> Stashed changes
     )
     String hotkeyProfile3 = "hotkeyProfile3";
 
@@ -569,7 +656,12 @@ public interface PvPUtilitiesConfig extends Config
     @ConfigSection(
             name = "Hotkey Profile Four",
             description = "Fourth hotkey profile configuration",
+<<<<<<< Updated upstream
             position = 7
+=======
+            position = 8,
+            closedByDefault = true
+>>>>>>> Stashed changes
     )
     String hotkeyProfile4 = "hotkeyProfile4";
 
@@ -663,7 +755,12 @@ public interface PvPUtilitiesConfig extends Config
     @ConfigSection(
             name = "Hotkey Profile Five",
             description = "Fifth hotkey profile configuration",
+<<<<<<< Updated upstream
             position = 8
+=======
+            position = 9,
+            closedByDefault = true
+>>>>>>> Stashed changes
     )
     String hotkeyProfile5 = "hotkeyProfile5";
 
@@ -757,7 +854,12 @@ public interface PvPUtilitiesConfig extends Config
     @ConfigSection(
             name = "Extended Action Delays",
             description = "Configure random delays for action execution",
+<<<<<<< Updated upstream
             position = 9
+=======
+            position = 10,
+            closedByDefault = true
+>>>>>>> Stashed changes
     )
     String extendedActionDelays = "extendedActionDelays";
 
@@ -793,7 +895,12 @@ public interface PvPUtilitiesConfig extends Config
     @ConfigSection(
             name = "General Settings",
             description = "General plugin settings",
+<<<<<<< Updated upstream
             position = 10
+=======
+            position = 11,
+            closedByDefault = true
+>>>>>>> Stashed changes
     )
     String generalSettings = "generalSettings";
 
