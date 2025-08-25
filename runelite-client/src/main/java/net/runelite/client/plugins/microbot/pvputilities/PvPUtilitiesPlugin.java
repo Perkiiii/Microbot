@@ -33,7 +33,7 @@ import java.awt.event.KeyEvent;
  * Coordinates all managers, handlers, and services
  */
 @PluginDescriptor(
-        name = PluginDescriptor.Cicire + "PvP Utilities",
+        name = PluginDescriptor.PK + "PvP Utilities",
         description = "Advanced PvP utilities with hotkey profiles, prayer switching, and target attacking",
         tags = {"pvp", "hotkeys", "gear", "prayers", "spells", "microbot"},
         enabledByDefault = false

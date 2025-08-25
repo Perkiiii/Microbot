@@ -28,9 +28,9 @@ public class PlayerIndicatorsExtendedOverlay extends Overlay {
    private static final Logger log = LoggerFactory.getLogger(PlayerIndicatorsExtendedOverlay.class);
    private static final int ACTOR_OVERHEAD_TEXT_MARGIN = 40;
    private static final int ACTOR_HORIZONTAL_TEXT_MARGIN = 10;
-   private final BufferedImage agilityIcon = ImageUtil.getResourceStreamFromClass(PlayerIndicatorsExtendedPlugin.class, "agility.png");
-   private final BufferedImage noAgilityIcon = ImageUtil.getResourceStreamFromClass(PlayerIndicatorsExtendedPlugin.class, "no-agility.png");
-   private final BufferedImage skullIcon = ImageUtil.getResourceStreamFromClass(PlayerIndicatorsExtendedPlugin.class, "skull.png");
+   private final BufferedImage agilityIcon = ImageUtil.loadImageResource(PlayerIndicatorsExtendedPlugin.class, "/net/runelite/client/plugins/microbot/playerindicatorsextended/agility.png");
+   private final BufferedImage noAgilityIcon = ImageUtil.loadImageResource(PlayerIndicatorsExtendedPlugin.class, "/net/runelite/client/plugins/microbot/playerindicatorsextended/no-agility.png");
+   private final BufferedImage skullIcon = ImageUtil.loadImageResource(PlayerIndicatorsExtendedPlugin.class, "/net/runelite/client/plugins/microbot/playerindicatorsextended/skull.png");
    private final PlayerIndicatorsExtendedPlugin plugin;
    private final PlayerIndicatorsExtendedConfig config;
    private final PlayerIndicatorsExtendedService playerIndicatorsExtendedService;
@@ -49,7 +49,12 @@ public class PlayerIndicatorsExtendedOverlay extends Overlay {
    }
 
    public Dimension render(Graphics2D graphics) {
+      long start = System.nanoTime();
       this.playerIndicatorsExtendedService.forEachPlayer((player, playerRelation) -> this.drawSceneOverlays(graphics, player, playerRelation));
+      long end = System.nanoTime();
+      if (end - start > 10_000_000) { // >10ms
+         System.out.println("[PlayerIndicatorsExtendedOverlay] render took " + (end - start)/1_000_000.0 + " ms");
+      }
       return null;
    }
 
@@ -61,6 +66,9 @@ public class PlayerIndicatorsExtendedOverlay extends Overlay {
          String name = actor.getName();
          int zOffset = actor.getLogicalHeight() + 40;
          Point textLocation = actor.getCanvasTextLocation(graphics, name, zOffset);
+         // Only draw skull icon if enabled and location is selected
+         boolean showSkullAboveHead = skulls && actor.getSkullIcon() != -1 && relation.equals(PlayerIndicatorsExtendedPlugin.PlayerRelation.TARGET)
+            && this.config.skullIconLocations().contains(PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.ABOVE_HEAD);
          if (indicationLocations.contains(PlayerIndicatorsExtendedPlugin.PlayerIndicationLocation.ABOVE_HEAD)) {
             StringBuilder nameSb = new StringBuilder(name);
             if (this.config.showCombatLevel()) {
@@ -83,7 +91,7 @@ public class PlayerIndicatorsExtendedOverlay extends Overlay {
                      renderActorTextAndImage(graphics, actor, builtString, color, ImageUtil.resizeImage(clanRankImage, y, y), 0, 10);
                   }
                }
-            } else if (skulls && actor.getSkullIcon() != -1 && relation.equals(PlayerIndicatorsExtendedPlugin.PlayerRelation.TARGET)) {
+            } else if (showSkullAboveHead) {
                renderActorTextAndImage(graphics, actor, builtString, color, ImageUtil.resizeImage(this.skullIcon, y, y), 40, 10);
             } else {
                renderActorTextOverlay(graphics, actor, builtString, color);

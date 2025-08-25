@@ -20,7 +20,7 @@ public class PlayerIndicatorsExtendedMinimapOverlay extends Overlay {
    private final PlayerIndicatorsExtendedService playerIndicatorsExtendedService;
    private final PlayerIndicatorsExtendedPlugin plugin;
    private final PlayerIndicatorsExtendedConfig config;
-   private final BufferedImage skullIcon = ImageUtil.loadImageResource(PlayerIndicatorsExtendedPlugin.class, "skull.png");
+   private final BufferedImage skullIcon = ImageUtil.loadImageResource(PlayerIndicatorsExtendedPlugin.class, "/net/runelite/client/plugins/microbot/playerindicatorsextended/skull.png");
 
    @Inject
    private PlayerIndicatorsExtendedMinimapOverlay(PlayerIndicatorsExtendedPlugin plugin, PlayerIndicatorsExtendedConfig config, PlayerIndicatorsExtendedService playerIndicatorsExtendedService) {
@@ -63,7 +63,12 @@ public class PlayerIndicatorsExtendedMinimapOverlay extends Overlay {
    }
 
    public Dimension render(Graphics2D graphics) {
+      long start = System.nanoTime();
       this.playerIndicatorsExtendedService.forEachPlayer((Player player, PlayerIndicatorsExtendedPlugin.PlayerRelation playerRelation) -> this.renderMinimapOverlays(graphics, player, playerRelation));
+      long end = System.nanoTime();
+      if (end - start > 10_000_000) { // >10ms
+         System.out.println("[PlayerIndicatorsExtendedMinimapOverlay] render took " + (end - start)/1_000_000.0 + " ms");
+      }
       return null;
    }
 }

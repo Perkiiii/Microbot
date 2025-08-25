@@ -46,9 +46,10 @@ import net.runelite.client.util.Text;
 import net.runelite.client.plugins.microbot.Microbot;
 
 @PluginDescriptor(
-   name = "Player Indicators Extended",
+   name = PluginDescriptor.PK + "Player Indicators Extended",
    description = "Highlight players on-screen and/or on the minimap",
-   tags = {"highlight", "minimap", "overlay", "players", "pklite"}
+   tags = {"highlight", "minimap", "overlay", "players", "pklite"},
+   enabledByDefault = false
 )
 public class PlayerIndicatorsExtendedPlugin extends Plugin {
    @Inject
@@ -59,7 +60,7 @@ public class PlayerIndicatorsExtendedPlugin extends Plugin {
    private final Map<PlayerRelation, Object[]> locationHashMap = new ConcurrentHashMap<>();
    private final Map<String, Actor> callerPiles = new ConcurrentHashMap<>();
    private final Map<String, HiscoreResult> resultCache = new HashMap<>();
-   private final ExecutorService executorService = Executors.newFixedThreadPool(100);
+   private ExecutorService executorService;
    private static final Pattern WILDERNESS_LEVEL_PATTERN = Pattern.compile("^Level: (\\d+)\\.*");
    @Inject
    private OverlayManager overlayManager;
@@ -75,24 +76,33 @@ public class PlayerIndicatorsExtendedPlugin extends Plugin {
    private Client client;
    @Inject
    private ChatIconManager chatIconManager;
+   @Inject
+   private PlayerIndicatorsExtendedScript playerIndicatorsExtendedScript;
 
    @Provides
    PlayerIndicatorsExtendedConfig provideConfig(ConfigManager configManager) {
       return (PlayerIndicatorsExtendedConfig)configManager.getConfig(PlayerIndicatorsExtendedConfig.class);
    }
 
+   @Override
    protected void startUp() {
+      this.executorService = Executors.newFixedThreadPool(100);
       this.updateConfig();
       this.resultCache.clear();
       this.overlayManager.add(this.playerIndicatorsExtendedOverlay);
       this.overlayManager.add(this.playerIndicatorsExtendedMinimapOverlay);
       this.getCallerList();
+      // Start the script for Microbot integration
+      playerIndicatorsExtendedScript.run(config);
    }
 
    protected void shutDown() {
+      if (this.executorService != null && !this.executorService.isShutdown()) {
+         this.executorService.shutdownNow();
+      }
+      this.resultCache.clear();
       this.overlayManager.remove(this.playerIndicatorsExtendedOverlay);
       this.overlayManager.remove(this.playerIndicatorsExtendedMinimapOverlay);
-      this.resultCache.clear();
    }
 
    @Subscribe
