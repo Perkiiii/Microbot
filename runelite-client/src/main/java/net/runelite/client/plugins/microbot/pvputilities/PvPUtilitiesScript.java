@@ -6,6 +6,7 @@ import net.runelite.client.plugins.microbot.util.equipment.Rs2Equipment;
 import net.runelite.client.plugins.microbot.util.inventory.Rs2ItemModel;
 import net.runelite.client.plugins.microbot.util.prayer.Rs2Prayer;
 import net.runelite.client.plugins.microbot.util.prayer.Rs2PrayerEnum;
+import net.runelite.client.plugins.microbot.pvputilities.enums.OffensivePrayer;
 import net.runelite.api.EquipmentInventorySlot;
 
 import java.util.concurrent.TimeUnit;
@@ -89,7 +90,7 @@ public class PvPUtilitiesScript extends Script {
 
         // Check which combat style this weapon belongs to
         String weaponIdStr = String.valueOf(currentWeaponId);
-        PvPUtilitiesConfig.OffensivePrayer prayerToActivate = null;
+        OffensivePrayer prayerToActivate = null;
         String combatStyle = null;
 
         // Debug logging for gear lists
@@ -150,8 +151,8 @@ public class PvPUtilitiesScript extends Script {
         return false;
     }
 
-    private void activateOffensivePrayer(PvPUtilitiesConfig.OffensivePrayer offensivePrayer) {
-        Rs2PrayerEnum prayer = convertOffensivePrayer(offensivePrayer);
+    private void activateOffensivePrayer(OffensivePrayer offensivePrayer) {
+        Rs2PrayerEnum prayer = offensivePrayer.toPrayerEnum();
         if (prayer != null) {
             logMessage("Attempting to activate prayer: " + prayer.getName());
 
@@ -177,39 +178,6 @@ public class PvPUtilitiesScript extends Script {
             }
         } else {
             logMessage("Could not find matching prayer for: " + offensivePrayer.getPrayerName());
-        }
-    }
-
-    private Rs2PrayerEnum convertOffensivePrayer(PvPUtilitiesConfig.OffensivePrayer offensivePrayer) {
-        switch (offensivePrayer) {
-            case BURST_STRENGTH:
-                return Rs2PrayerEnum.BURST_STRENGTH;
-            case SUPERHUMAN_STRENGTH:
-                return Rs2PrayerEnum.SUPERHUMAN_STRENGTH;
-            case ULTIMATE_STRENGTH:
-                return Rs2PrayerEnum.ULTIMATE_STRENGTH;
-            case SHARP_EYE:
-                return Rs2PrayerEnum.SHARP_EYE;
-            case HAWK_EYE:
-                return Rs2PrayerEnum.HAWK_EYE;
-            case EAGLE_EYE:
-                return Rs2PrayerEnum.EAGLE_EYE;
-            case MYSTIC_WILL:
-                return Rs2PrayerEnum.MYSTIC_WILL;
-            case MYSTIC_LORE:
-                return Rs2PrayerEnum.MYSTIC_LORE;
-            case MYSTIC_MIGHT:
-                return Rs2PrayerEnum.MYSTIC_MIGHT;
-            case CHIVALRY:
-                return Rs2PrayerEnum.CHIVALRY;
-            case PIETY:
-                return Rs2PrayerEnum.PIETY;
-            case RIGOUR:
-                return Rs2PrayerEnum.RIGOUR;
-            case AUGURY:
-                return Rs2PrayerEnum.AUGURY;
-            default:
-                return null;
         }
     }
 

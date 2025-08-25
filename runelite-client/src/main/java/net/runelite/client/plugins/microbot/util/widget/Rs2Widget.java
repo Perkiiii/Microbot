@@ -94,7 +94,13 @@ public class Rs2Widget {
     }
 
     public static Widget getWidget(@Component int id) {
-        return Microbot.getClientThread().runOnClientThreadOptional(() -> Microbot.getClient().getWidget(id)).orElse(null);
+        try {
+            return Microbot.getClientThread().runOnClientThreadOptional(() -> Microbot.getClient().getWidget(id)).orElse(null);
+        } catch (Exception ex) {
+            // Log and fail gracefully on timeout or other errors
+            System.err.println("[Rs2Widget] getWidget(" + id + ") failed: " + ex.getMessage());
+            return null;
+        }
     }
 
     public static boolean isHidden(int parentId, int childId) {
@@ -106,11 +112,17 @@ public class Rs2Widget {
     }
 
     public static boolean isHidden(@Component int id) {
-        return Microbot.getClientThread().runOnClientThreadOptional(() -> {
-            Widget widget = Microbot.getClient().getWidget(id);
-            if (widget == null) return true;
-            return widget.isHidden();
-        }).orElse(false);
+        try {
+            return Microbot.getClientThread().runOnClientThreadOptional(() -> {
+                Widget widget = Microbot.getClient().getWidget(id);
+                if (widget == null) return true;
+                return widget.isHidden();
+            }).orElse(false);
+        } catch (Exception ex) {
+            // Log and fail gracefully on timeout or other errors
+            System.err.println("[Rs2Widget] isHidden(" + id + ") failed: " + ex.getMessage());
+            return true;
+        }
     }
 
     public static Widget getWidget(int id, int child) {

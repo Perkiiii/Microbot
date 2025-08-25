@@ -1,11 +1,16 @@
 package net.runelite.client.plugins.microbot.pvputilities;
 
 import net.runelite.client.config.*;
-import net.runelite.client.plugins.microbot.util.magic.Rs2CombatSpells;
+import net.runelite.client.config.Keybind;
+import net.runelite.client.plugins.microbot.pvputilities.enums.DefensivePrayer;
+import net.runelite.client.plugins.microbot.pvputilities.enums.OffensivePrayer;
+import net.runelite.client.plugins.microbot.pvputilities.enums.SpellOption;
 
-@ConfigGroup("pvputilities")
+@ConfigGroup(PvPUtilitiesConfig.GROUP)
 public interface PvPUtilitiesConfig extends Config
 {
+    String GROUP = "pvputilities";
+
     // ===========================================
     // PVP UTILITIES CONFIG SECTION
     // ===========================================
@@ -79,20 +84,20 @@ public interface PvPUtilitiesConfig extends Config
     @ConfigItem(
             keyName = "fastGearSwitching",
             name = "Fast Gear Switching",
-            description = "Enable faster gear switching with minimal delays (1-3ms instead of 8-18ms). Better for competitive PvP.",
-            position = 7,
+            description = "Enable fast gear switching.",
+            position = 6,
             section = pvpUtilitiesConfig
     )
     default boolean fastGearSwitching()
     {
-        return true;
+        return false;
     }
 
     @ConfigItem(
             keyName = "walkUnderTarget",
             name = "Walk Under Target",
-            description = "Automatically walk under the target.",
-            position = 8,
+            description = "Enable walking under your target.",
+            position = 7,
             section = pvpUtilitiesConfig
     )
     default boolean walkUnderTarget()
@@ -104,7 +109,7 @@ public interface PvPUtilitiesConfig extends Config
             keyName = "walkUnderTargetHotkey",
             name = "Walk Under Target Hotkey",
             description = "Hotkey to toggle walk under target functionality.",
-            position = 9,
+            position = 8,
             section = pvpUtilitiesConfig
     )
     default Keybind walkUnderTargetHotkey()
@@ -154,7 +159,7 @@ public interface PvPUtilitiesConfig extends Config
     // ===========================================
     @ConfigSection(
             name = "Defensive Prayer Switching",
-            description = "Hotkeys for defensive prayer switching",
+            description = "Hotkeys for defensive prayer switching with enum-based configuration",
             position = 3,
             closedByDefault = true
     )
@@ -164,7 +169,7 @@ public interface PvPUtilitiesConfig extends Config
             keyName = "protectFromMagicHotkey",
             name = "Protect from Magic",
             description = "Hotkey to activate Protect from Magic prayer.",
-            position = 1,
+            position = 2,
             section = defensivePrayerSwitching
     )
     default Keybind protectFromMagicHotkey()
@@ -176,7 +181,7 @@ public interface PvPUtilitiesConfig extends Config
             keyName = "protectFromMissilesHotkey",
             name = "Protect from Missiles",
             description = "Hotkey to activate Protect from Missiles prayer.",
-            position = 2,
+            position = 3,
             section = defensivePrayerSwitching
     )
     default Keybind protectFromMissilesHotkey()
@@ -188,7 +193,7 @@ public interface PvPUtilitiesConfig extends Config
             keyName = "protectFromMeleeHotkey",
             name = "Protect from Melee",
             description = "Hotkey to activate Protect from Melee prayer.",
-            position = 3,
+            position = 4,
             section = defensivePrayerSwitching
     )
     default Keybind protectFromMeleeHotkey()
@@ -367,18 +372,6 @@ public interface PvPUtilitiesConfig extends Config
     }
 
     @ConfigItem(
-            keyName = "spellToCast1",
-            name = "Spell to Cast",
-            description = "Select the spell you wish to cast.",
-            position = 6,
-            section = hotkeyProfile1
-    )
-    default SpellOption spellToCast1()
-    {
-        return SpellOption.NONE;
-    }
-
-    @ConfigItem(
             keyName = "activateSpecialAttack1",
             name = "Activate Special Attack",
             description = "Automatically activate special attack when this profile is used.",
@@ -401,6 +394,15 @@ public interface PvPUtilitiesConfig extends Config
     {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "spellToCast1",
+            name = "Spell to Cast",
+            description = "Select the spell you wish to cast.",
+            position = 6,
+            section = hotkeyProfile1
+    )
+    default SpellOption spellToCast1() { return SpellOption.NONE; }
 
     // ===========================================
     // HOTKEY PROFILE TWO SECTION
@@ -462,18 +464,6 @@ public interface PvPUtilitiesConfig extends Config
     }
 
     @ConfigItem(
-            keyName = "spellToCast2",
-            name = "Spell to Cast",
-            description = "Select the spell you wish to cast.",
-            position = 6,
-            section = hotkeyProfile2
-    )
-    default SpellOption spellToCast2()
-    {
-        return SpellOption.NONE;
-    }
-
-    @ConfigItem(
             keyName = "activateSpecialAttack2",
             name = "Activate Special Attack",
             description = "Automatically activate special attack when this profile is used.",
@@ -496,6 +486,15 @@ public interface PvPUtilitiesConfig extends Config
     {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "spellToCast2",
+            name = "Spell to Cast",
+            description = "Select the spell you wish to cast.",
+            position = 6,
+            section = hotkeyProfile2
+    )
+    default SpellOption spellToCast2() { return SpellOption.NONE; }
 
     // ===========================================
     // HOTKEY PROFILE THREE SECTION
@@ -558,18 +557,6 @@ public interface PvPUtilitiesConfig extends Config
     }
 
     @ConfigItem(
-            keyName = "spellToCast3",
-            name = "Spell to Cast",
-            description = "Select the spell you wish to cast.",
-            position = 6,
-            section = hotkeyProfile3
-    )
-    default SpellOption spellToCast3()
-    {
-        return SpellOption.NONE;
-    }
-
-    @ConfigItem(
             keyName = "activateSpecialAttack3",
             name = "Activate Special Attack",
             description = "Automatically activate special attack when this profile is used.",
@@ -592,6 +579,15 @@ public interface PvPUtilitiesConfig extends Config
     {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "spellToCast3",
+            name = "Spell to Cast",
+            description = "Select the spell you wish to cast.",
+            position = 6,
+            section = hotkeyProfile3
+    )
+    default SpellOption spellToCast3() { return SpellOption.NONE; }
 
     // ===========================================
     // HOTKEY PROFILE FOUR SECTION
@@ -653,18 +649,6 @@ public interface PvPUtilitiesConfig extends Config
     }
 
     @ConfigItem(
-            keyName = "spellToCast4",
-            name = "Spell to Cast",
-            description = "Select the spell you wish to cast.",
-            position = 6,
-            section = hotkeyProfile4
-    )
-    default SpellOption spellToCast4()
-    {
-        return SpellOption.NONE;
-    }
-
-    @ConfigItem(
             keyName = "activateSpecialAttack4",
             name = "Activate Special Attack",
             description = "Automatically activate special attack when this profile is used.",
@@ -687,6 +671,15 @@ public interface PvPUtilitiesConfig extends Config
     {
         return false;
     }
+
+    @ConfigItem(
+            keyName = "spellToCast4",
+            name = "Spell to Cast",
+            description = "Select the spell you wish to cast.",
+            position = 6,
+            section = hotkeyProfile4
+    )
+    default SpellOption spellToCast4() { return SpellOption.NONE; }
 
     // ===========================================
     // HOTKEY PROFILE FIVE SECTION
@@ -748,18 +741,6 @@ public interface PvPUtilitiesConfig extends Config
     }
 
     @ConfigItem(
-            keyName = "spellToCast5",
-            name = "Spell to Cast",
-            description = "Select the spell you wish to cast.",
-            position = 6,
-            section = hotkeyProfile5
-    )
-    default SpellOption spellToCast5()
-    {
-        return SpellOption.NONE;
-    }
-
-    @ConfigItem(
             keyName = "activateSpecialAttack5",
             name = "Activate Special Attack",
             description = "Automatically activate special attack when this profile is used.",
@@ -783,13 +764,113 @@ public interface PvPUtilitiesConfig extends Config
         return false;
     }
 
+    @ConfigItem(
+            keyName = "spellToCast5",
+            name = "Spell to Cast",
+            description = "Select the spell you wish to cast.",
+            position = 6,
+            section = hotkeyProfile5
+    )
+    default SpellOption spellToCast5() { return SpellOption.NONE; }
+
+    // ===========================================
+    // SPECIAL ATTACK PROFILE CONFIG SECTION
+    // ===========================================
+    @ConfigSection(
+            name = "Special Attack Profile",
+            description = "Configuration for the Special Attack Profile (Profile 6)",
+            position = 10,
+            closedByDefault = true
+    )
+    String specialAttackProfileSection = "specialAttackProfileSection";
+
+    @ConfigItem(
+            keyName = "enableSpecialAttackProfile",
+            name = "Enable Special Attack Profile",
+            description = "Allows execution of this config with a hotkey.",
+            position = 1,
+            section = specialAttackProfileSection
+    )
+    default boolean enableSpecialAttackProfile() { return false; }
+
+    @ConfigItem(
+            keyName = "specialAttackProfileToggleKey",
+            name = "Toggle Key",
+            description = "Hotkey to activate the Special Attack Profile.",
+            position = 2,
+            section = specialAttackProfileSection
+    )
+    default Keybind specialAttackProfileToggleKey() { return Keybind.NOT_SET; }
+
+    @ConfigItem(
+            keyName = "specialAttackProfileGear",
+            name = "Gear to Equip",
+            description = "Comma-separated item IDs to equip for the Special Attack Profile.",
+            position = 3,
+            section = specialAttackProfileSection
+    )
+    default String specialAttackProfileGear() { return ""; }
+
+    @ConfigItem(
+            keyName = "specialAttackProfilePrayers",
+            name = "Prayers to Enable",
+            description = "Comma-separated prayer names to enable for the Special Attack Profile.",
+            position = 4,
+            section = specialAttackProfileSection
+    )
+    default String specialAttackProfilePrayers() { return ""; }
+
+    public enum SpecialAttackSpecType {
+        SINGLE,
+        DOUBLE
+    }
+
+    @ConfigItem(
+            keyName = "specialAttackProfileSpecType",
+            name = "Spec Type",
+            description = "Type of special attack: Single or Double.",
+            position = 5,
+            section = specialAttackProfileSection
+    )
+    default SpecialAttackSpecType specialAttackProfileSpecType() { return SpecialAttackSpecType.SINGLE; }
+
+    @ConfigItem(
+            keyName = "specialAttackProfileSpecEnergy",
+            name = "Spec Energy Required (%)",
+            description = "Special attack energy required to activate (e.g., 50 for 50%).",
+            position = 6,
+            section = specialAttackProfileSection
+    )
+    @Range(min = 25, max = 100)
+    default int specialAttackProfileSpecEnergy() { return 50; }
+
+    @ConfigItem(
+            keyName = "specialAttackProfileActivateSpec",
+            name = "Activate Special Attack",
+            description = "Whether to activate special attack for the Special Attack Profile.",
+            position = 7,
+            section = specialAttackProfileSection
+    )
+    default boolean specialAttackProfileActivateSpec() { return true; }
+
+    @ConfigItem(
+            keyName = "specialAttackProfileAttackTarget",
+            name = "Attack Target",
+            description = "Whether to attack the target for the Special Attack Profile.",
+            position = 8,
+            section = specialAttackProfileSection
+    )
+    default boolean specialAttackProfileAttackTarget() { return true; }
+
+
+
     // ===========================================
     // EXTENDED ACTION DELAYS SECTION
     // ===========================================
     @ConfigSection(
             name = "Extended Action Delays",
             description = "Configure random delays for action execution",
-            position = 10,
+            position = 11,
             closedByDefault = true
     )
     String extendedActionDelays = "extendedActionDelays";
@@ -826,7 +907,7 @@ public interface PvPUtilitiesConfig extends Config
     @ConfigSection(
             name = "General Settings",
             description = "General plugin settings",
-            position = 11,
+            position = 12,
             closedByDefault = true
     )
     String generalSettings = "generalSettings";
@@ -840,117 +921,6 @@ public interface PvPUtilitiesConfig extends Config
     )
     default boolean enableLogging()
     {
-        return true;
-    }
-
-    // ===========================================
-    // SPELL OPTION ENUM (WITH NONE)
-    // ===========================================
-    enum SpellOption
-    {
-        NONE("None"),
-        WIND_STRIKE("Wind Strike"),
-        WATER_STRIKE("Water Strike"),
-        EARTH_STRIKE("Earth Strike"),
-        FIRE_STRIKE("Fire Strike"),
-        WIND_BOLT("Wind Bolt"),
-        WATER_BOLT("Water Bolt"),
-        EARTH_BOLT("Earth Bolt"),
-        FIRE_BOLT("Fire Bolt"),
-        WIND_BLAST("Wind Blast"),
-        WATER_BLAST("Water Blast"),
-        EARTH_BLAST("Earth Blast"),
-        FIRE_BLAST("Fire Blast"),
-        WIND_WAVE("Wind Wave"),
-        WATER_WAVE("Water Wave"),
-        EARTH_WAVE("Earth Wave"),
-        FIRE_WAVE("Fire Wave"),
-        WIND_SURGE("Wind Surge"),
-        WATER_SURGE("Water Surge"),
-        EARTH_SURGE("Earth Surge"),
-        FIRE_SURGE("Fire Surge"),
-        ICE_RUSH("Ice Rush"),
-        ICE_BURST("Ice Burst"),
-        ICE_BLITZ("Ice Blitz"),
-        ICE_BARRAGE("Ice Barrage"),
-        BLOOD_RUSH("Blood Rush"),
-        BLOOD_BURST("Blood Burst"),
-        BLOOD_BLITZ("Blood Blitz"),
-        BLOOD_BARRAGE("Blood Barrage"),
-        SHADOW_RUSH("Shadow Rush"),
-        SHADOW_BURST("Shadow Burst"),
-        SHADOW_BLITZ("Shadow Blitz"),
-        SHADOW_BARRAGE("Shadow Barrage"),
-        SMOKE_RUSH("Smoke Rush"),
-        SMOKE_BURST("Smoke Burst"),
-        SMOKE_BLITZ("Smoke Blitz"),
-        SMOKE_BARRAGE("Smoke Barrage");
-
-        private final String spellName;
-
-        SpellOption(String spellName)
-        {
-            this.spellName = spellName;
-        }
-
-        public String getSpellName()
-        {
-            return spellName;
-        }
-
-        public Rs2CombatSpells toCombatSpell()
-        {
-            if (this == NONE) return null;
-
-            try {
-                return Rs2CombatSpells.valueOf(this.name());
-            } catch (IllegalArgumentException e) {
-                return null;
-            }
-        }
-
-        @Override
-        public String toString()
-        {
-            return spellName;
-        }
-    }
-
-    // ===========================================
-    // OFFENSIVE PRAYER ENUM
-    // ===========================================
-    enum OffensivePrayer
-    {
-        BURST_STRENGTH("Burst of Strength"),
-        SUPERHUMAN_STRENGTH("Superhuman Strength"),
-        ULTIMATE_STRENGTH("Ultimate Strength"),
-        SHARP_EYE("Sharp Eye"),
-        HAWK_EYE("Hawk Eye"),
-        EAGLE_EYE("Eagle Eye"),
-        MYSTIC_WILL("Mystic Will"),
-        MYSTIC_LORE("Mystic Lore"),
-        MYSTIC_MIGHT("Mystic Might"),
-        CHIVALRY("Chivalry"),
-        PIETY("Piety"),
-        RIGOUR("Rigour"),
-        AUGURY("Augury");
-
-        private final String prayerName;
-
-        OffensivePrayer(String prayerName)
-        {
-            this.prayerName = prayerName;
-        }
-
-        public String getPrayerName()
-        {
-            return prayerName;
-        }
-
-        @Override
-        public String toString()
-        {
-            return prayerName;
-        }
+        return false;
     }
 }

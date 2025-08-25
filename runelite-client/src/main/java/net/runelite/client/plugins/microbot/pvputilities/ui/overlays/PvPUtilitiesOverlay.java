@@ -1,8 +1,10 @@
-package net.runelite.client.plugins.microbot.pvputilities;
+package net.runelite.client.plugins.microbot.pvputilities.ui.overlays;
 
 import net.runelite.api.Actor;
 import net.runelite.api.Player;
 import net.runelite.client.plugins.microbot.Microbot;
+import net.runelite.client.plugins.microbot.pvputilities.PvPUtilitiesConfig;
+import net.runelite.client.plugins.microbot.pvputilities.core.managers.TargetManager;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
@@ -12,16 +14,18 @@ import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 import javax.inject.Inject;
 import java.awt.*;
 
+/**
+ * Main overlay for PvP Utilities plugin
+ * Displays target information and provides visual feedback
+ */
 public class PvPUtilitiesOverlay extends OverlayPanel {
     private final PvPUtilitiesConfig config;
-    private final PvPUtilitiesPlugin plugin;
     private final ModelOutlineRenderer modelOutlineRenderer;
 
     @Inject
-    PvPUtilitiesOverlay(PvPUtilitiesConfig config, PvPUtilitiesPlugin plugin, ModelOutlineRenderer modelOutlineRenderer) {
+    PvPUtilitiesOverlay(PvPUtilitiesConfig config, ModelOutlineRenderer modelOutlineRenderer) {
         super();
         this.config = config;
-        this.plugin = plugin;
         this.modelOutlineRenderer = modelOutlineRenderer;
         setPosition(OverlayPosition.TOP_LEFT);
         setNaughty();
@@ -42,8 +46,8 @@ public class PvPUtilitiesOverlay extends OverlayPanel {
                     .color(Color.WHITE)
                     .build());
 
-            // Current Target only (removed status and spec info as requested)
-            Actor currentTarget = plugin.getCurrentTarget();
+            // Current Target information
+            Actor currentTarget = TargetManager.getCurrentTarget();
             String targetName = "None";
             Color targetColor = Color.RED;
 
@@ -51,8 +55,11 @@ public class PvPUtilitiesOverlay extends OverlayPanel {
                 targetName = currentTarget.getName();
                 targetColor = Color.GREEN;
 
-                // Highlight the target if enabled
+                // Only highlight the current target if present
                 highlightTarget(currentTarget);
+            } else {
+                // No current target: do not highlight anyone
+                // (ModelOutlineRenderer will not persist highlights if not called)
             }
 
             panelComponent.getChildren().add(LineComponent.builder()
